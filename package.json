@@ -1,0 +1,41 @@
+{
+	"name": "@ouroboros/brain-react",
+	"version": "1.0.0",
+	"description": "Hooks for handling signed in users and their permissions",
+	"main": "src/index.js",
+	"types": "src/index.d.ts",
+	"scripts": {
+		"build": "tslint -p tsconfig.json && tsc",
+		"clean": "cd src; find . -type f -name \"*.js\" -delete; find . -type f -name \"*.d.ts\" -delete",
+		"for_local": "npm install; tslint -p tsconfig.json && tsc; rm -Rf node_modules",
+		"test": "echo \"Error: no test specified.\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ouroboroscoding/brain-react.git"
+	},
+	"keywords": [
+		"@ouroboros/brain",
+		"react"
+	],
+	"author": "Chris Nasr <chris@ouroboroscoding.com>",
+	"license": "CUSTOM",
+	"bugs": {
+		"url": "https://github.com/ouroboroscoding/brain-react/issues"
+	},
+	"devDependencies": {
+		"@types/node": "^18.14.0",
+		"@types/react": "^18.0.28",
+		"tslint": "^6.1.3",
+		"tslint-config-prettier": "^1.18.0",
+		"typescript": "^4.8.3"
+	},
+	"dependencies": {
+		"@ouroboros/brain": "file:../brain",
+		"@ouroboros/clone": "^1.0.1"
+	},
+	"peerDependencies": {
+		"@ouroboros/body": "^1.0.2",
+		"react": "^17.0.2"
+	}
+}
