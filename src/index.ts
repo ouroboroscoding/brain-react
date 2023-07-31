@@ -10,29 +10,33 @@
 
 // Ouroboros modules
 import body, { responseErrorStruct } from '@ouroboros/body';
-import brain from '@ouroboros/brain';
+import brain, { RIGHTS_ALL_ID } from '@ouroboros/brain';
 import clone from '@ouroboros/clone';
 
 // NPM modules
 import { useEffect, useState } from 'react';
 
 // Types
-export type rightsStruct = {
+export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
+export type permissionSubscribeReturn = {
+	data: Record<string, Record<string, rightsStruct>> |
+			Record<string, rightsStruct> |
+			rightsStruct;
+	unsubscribe: () => void
+}
+export type rightOption = 'create' | 'delete' | 'read' | 'update';
+export type rightStruct = Record<string, number>
+export type rightsCallback = (rights: rightsStruct) => void;
+export type rightsStruct = Record<string, {
 	create?: true,
 	delete?: true,
 	read?: true,
 	update?: true
-}
-export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
-export type permissionSubscribeReturn = {
-	data: Record<string, rightsStruct> | rightsStruct;
-	unsubscribe: () => void
-}
-export type rightOption = 'create' | 'delete' | 'read' | 'update';
-export type rightsCallback = (rights: rightsStruct) => void;
+}>
 export type signinStruct = {
 	email: string,
-	passwd: string
+	passwd: string,
+	portal?: string
 }
 export type signinReturn = {
 	session: string,
@@ -45,7 +49,7 @@ export type subscribeReturn = {
 export type userCallback = (user: userType) => void;
 export type userType = {
 	_id: string,
-	permissions: Record<string, number>,
+	permissions: Record<string, rightStruct>,
 	[x: string]: any
 }
 
@@ -66,6 +70,8 @@ let _permissions: Record<string, rightsStruct> = {};
 const _permissionsSubscriptions: permissionsCallback[] = [];
 // Rights
 const _rightsSubscriptions: Record<string, rightsCallback[]> = {};
+// Rights all
+const _rightsAllSubscriptions: Record<string, rightsCallback[]> = {};
 // Callbacks
 let _noSession: () => void;
 
@@ -107,12 +113,17 @@ export function onNoSession(callback: () => void): void {
  * @name permissionsSubscribe
  * @access public
  * @param callback The callback to subscribe
- * @param permission Optional, the specific permission to subscribe to
+ * @param name Optional, the specific permission to subscribe to,
+ * @param id Optional, the specific ID to subscribe to on the permission
  */
-export function permissionsSubscribe(callback: permissionsCallback | rightsCallback, permission?: string): permissionSubscribeReturn {
+export function permissionsSubscribe(
+	callback: permissionsCallback | rightsCallback,
+	name?: string,
+	id?: string
+): permissionSubscribeReturn {
 
 	// If we have no specific permission
-	if(permission === undefined) {
+	if(name === undefined) {
 
 		// Just add it to the list
 		_permissionsSubscriptions.push(callback as permissionsCallback);
@@ -134,25 +145,62 @@ export function permissionsSubscribe(callback: permissionsCallback | rightsCallb
 	// Else, we have a specific permission
 	else {
 
-		// If we don't have this permission yet
-		if(!(permission in _rightsSubscriptions)) {
-			_rightsSubscriptions[permission] = [];
+		// If we have no ID
+		if(id === undefined) {
+
+			// If we don't have this permission yet
+			if(!(name in _rightsAllSubscriptions)) {
+				_rightsAllSubscriptions[name] = [];
+			}
+
+			// Add the callback
+			_rightsSubscriptions[name].push(callback as rightsCallback);
+
+			// Get the rights
+			const oRights = name in _permissions ?
+							clone(_permissions[name]) :
+							{ };
+
+			// Call the callback with the current data
+			callback(oRights);
+
+			// Return the current data and an unsubscribe function
+			return {
+				data: oRights,
+				unsubscribe: () => {
+					permissionsUnsubscribe(callback, name);
+				}
+			}
 		}
 
-		// Add the callback
-		_rightsSubscriptions[permission].push(callback as rightsCallback);
+		// Else, we are looking for a specific ID
+		else {
 
-		// Get the rights
-		const oRights = permission in _permissions ? clone(_permissions[permission]) : {};
+			// Generate the full key
+			const sKey = `${name}:${id}`;
 
-		// Call the callback with the current data
-		callback(oRights);
+			// If we don't have this permission yet
+			if(!(sKey in _rightsSubscriptions)) {
+				_rightsSubscriptions[sKey] = [];
+			}
 
-		// Return the current data and an unsubscribe function
-		return {
-			data: oRights,
-			unsubscribe: () => {
-				permissionsUnsubscribe(callback, permission);
+			// Add the callback
+			_rightsSubscriptions[sKey].push(callback as rightsCallback);
+
+			// Get the rights
+			const oRights = (name in _permissions && id in _permissions[name]) ?
+							clone(_permissions[name][id]) :
+							{ };
+
+			// Call the callback with the current data
+			callback(oRights);
+
+			// Return the current data and an unsubscribe function
+			return {
+				data: oRights,
+				unsubscribe: () => {
+					permissionsUnsubscribe(callback, name, id);
+				}
 			}
 		}
 	}
@@ -166,16 +214,23 @@ export function permissionsSubscribe(callback: permissionsCallback | rightsCallb
  * @name permissionsUnsubscribe
  * @access public
  * @param callback The callback to unsubscribe
- * @param permission Optional, the specific permission to unsubscribe from
+ * @param name Optional, the specific permission to unsubscribe from
+ * @param id Optional, the specific ID on the permission to unsubscribe from
  * @returns true if the callback was found and removed
  */
-export function permissionsUnsubscribe(callback: permissionsCallback | rightsCallback, permission?: string): boolean {
+export function permissionsUnsubscribe(
+	callback: permissionsCallback | rightsCallback,
+	name?: string,
+	id?: string
+): boolean {
 
 	// If we have no specific permission
-	if(permission === undefined) {
+	if(name === undefined) {
 
 		// Find the callback
-		const i = _permissionsSubscriptions.indexOf(callback as permissionsCallback);
+		const i = _permissionsSubscriptions.indexOf(
+			callback as permissionsCallback
+		);
 
 		// If we found it
 		if(i > -1) {
@@ -192,23 +247,31 @@ export function permissionsUnsubscribe(callback: permissionsCallback | rightsCal
 	// Else, we have a specific permission
 	else {
 
+		// Figure out the ID
+		const sID = id === undefined ? RIGHTS_ALL_ID : id;
+
+		// Add the ID to the name
+		const sKey = `${name}:${sID}`;
+
 		// If we don't have any callbacks for the permission
-		if(!(permission in _rightsSubscriptions)) {
+		if(!(sKey in _rightsSubscriptions)) {
 			return false;
 		}
 
 		// Find the callback
-		const i = _rightsSubscriptions[permission].indexOf(callback as rightsCallback);
+		const i = _rightsSubscriptions[sKey].indexOf(
+			callback as rightsCallback
+		);
 
 		// If we found it
 		if(i > -1) {
 
 			// Splice it out
-			_rightsSubscriptions[permission].splice(i, 1);
+			_rightsSubscriptions[sKey].splice(i, 1);
 
 			// If we no longer have any callbacks, remove the permission
-			if(_rightsSubscriptions[permission].length <= 0) {
-				delete _rightsSubscriptions[permission];
+			if(_rightsSubscriptions[sKey].length <= 0) {
+				delete _rightsSubscriptions[sKey];
 			}
 
 			// Return found and remove
@@ -229,7 +292,7 @@ export function permissionsUnsubscribe(callback: permissionsCallback | rightsCal
  * @access public
  * @param permissions The new list of permissions from the user
  */
-function permissionsSet(list: Record<string, number>): void {
+function permissionsSet(list: Record<string, rightStruct>): void {
 
 	// Reset the point to the list by re-initialising it
 	_permissions = {}
@@ -237,17 +300,24 @@ function permissionsSet(list: Record<string, number>): void {
 	// Go through each permission
 	for(const name of Object.keys(list)) {
 
-		// Initialise the permission rights to none
-		_permissions[name] = {};
+		// Initialise the IDs
+		_permissions[name] = { };
 
-		// Go through each right
-		for(const s of (Object.keys(_types) as rightOption[])) {
+		// Go through each ID
+		for(const id of (Object.keys(list[name]))) {
 
-			// If it exists on the permission
-			if(list[name] & _types[s]) {
+			// Initialise the permission rights to none
+			_permissions[name][id] = { };
 
-				// Set it to true
-				_permissions[name][s] = true;
+			// Go through each right
+			for(const s of (Object.keys(_types) as rightOption[])) {
+
+				// If it exists on the permission
+				if(list[name][id] & _types[s]) {
+
+					// Set it to true
+					_permissions[name][id][s] = true;
+				}
 			}
 		}
 	}
@@ -260,14 +330,20 @@ function permissionsSet(list: Record<string, number>): void {
 	}
 
 	// Go through all names of permissions in the rights callbacks
-	for(const p of Object.keys(_rightsSubscriptions)) {
+	for(const k of Object.keys(_rightsSubscriptions)) {
 
 		// Go through each callback
-		for(const f of _rightsSubscriptions[p]) {
+		for(const f of _rightsSubscriptions[k]) {
+
+			// Split the key into name and ID
+			const [name, id] = k.split(':')
 
 			// Pass a copy of the rights to it if we find any, else just an
 			//	empty object
-			f((p in _permissions ? clone(_permissions[p]) : {}));
+			f((name in _permissions && id in _permissions[name]) ?
+				clone(_permissions[name][id]) :
+				{}
+			);
 		}
 	}
 }
@@ -433,7 +509,7 @@ export function unsubscribe(callback: userCallback): boolean {
 /**
  * Update
  *
- * Sets the passed data, or gets the latest from the server
+ * Gets the latest data from the server
  *
  * @name update
  * @access public
@@ -497,21 +573,59 @@ export function usePermissions(): Record<string, rightsStruct> {
 /**
  * Use Rights
  *
- * A react hook to keep track of what rights a user has
+ * A react hook to keep track of what rights a user has under a specific ID
  *
  * @name useRights
  * @access public
  * @param permission The name of the permission to track
+ * @param id? Tbe specific ID to return
  * @returns the rights associated with the permission
  */
-export function useRights(permission: string): rightsStruct {
+export function useRights(
+	permission: string,
+	id: string = '*'
+): rightsStruct {
 
 	// Store the state
-	const [rights, rightsSet] = useState<rightsStruct>({});
+	const [rights, rightsSet] = useState<rightsStruct>({ });
 
 	// Load effect, subscribe to specific permission changes
 	useEffect(() => {
-		const o = permissionsSubscribe(rightsSet, permission);
+		const o = permissionsSubscribe(
+			rightsSet,
+			permission,
+			id === '*' ? RIGHTS_ALL_ID : id
+		);
+		return () => o.unsubscribe();
+	}, []);
+
+	// Return the current value
+	return rights;
+}
+
+/**
+ * Use Rights All
+ *
+ * A react hook to keep track of what rights a user has for all IDs under a name
+ *
+ * @name useRightsAll
+ * @access public
+ * @param permission The name of the permission to track
+ * @returns the rights associated with the permission for each ID available
+ */
+export function useRightsAll(
+	permission: string
+): Record<string, rightsStruct> {
+
+	// Store the results
+	const [rights, rightsSet] = useState<Record<string, rightsStruct>>({ });
+
+	// Load effect, subscribe to specific permission changes
+	useEffect(() => {
+		const o = permissionsSubscribe(
+			rightsSet,
+			permission
+		);
 		return () => o.unsubscribe();
 	}, []);
 
