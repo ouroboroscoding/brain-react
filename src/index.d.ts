@@ -7,22 +7,24 @@
  * @copyright Ouroboros Coding Inc.
  * @created 2023-03-06
  */
-export type rightsStruct = {
+export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
+export type permissionSubscribeReturn = {
+    data: Record<string, Record<string, rightsStruct>> | Record<string, rightsStruct> | rightsStruct;
+    unsubscribe: () => void;
+};
+export type rightOption = 'create' | 'delete' | 'read' | 'update';
+export type rightStruct = Record<string, number>;
+export type rightsCallback = (rights: rightsStruct) => void;
+export type rightsStruct = Record<string, {
     create?: true;
     delete?: true;
     read?: true;
     update?: true;
-};
-export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
-export type permissionSubscribeReturn = {
-    data: Record<string, rightsStruct> | rightsStruct;
-    unsubscribe: () => void;
-};
-export type rightOption = 'create' | 'delete' | 'read' | 'update';
-export type rightsCallback = (rights: rightsStruct) => void;
+}>;
 export type signinStruct = {
     email: string;
     passwd: string;
+    portal?: string;
 };
 export type signinReturn = {
     session: string;
@@ -35,7 +37,7 @@ export type subscribeReturn = {
 export type userCallback = (user: userType) => void;
 export type userType = {
     _id: string;
-    permissions: Record<string, number>;
+    permissions: Record<string, rightStruct>;
     [x: string]: any;
 };
 /**
@@ -56,9 +58,10 @@ export declare function onNoSession(callback: () => void): void;
  * @name permissionsSubscribe
  * @access public
  * @param callback The callback to subscribe
- * @param permission Optional, the specific permission to subscribe to
+ * @param name Optional, the specific permission to subscribe to,
+ * @param id Optional, the specific ID to subscribe to on the permission
  */
-export declare function permissionsSubscribe(callback: permissionsCallback | rightsCallback, permission?: string): permissionSubscribeReturn;
+export declare function permissionsSubscribe(callback: permissionsCallback | rightsCallback, name?: string, id?: string): permissionSubscribeReturn;
 /**
  * Permissions Unsubscribe
  *
@@ -67,10 +70,11 @@ export declare function permissionsSubscribe(callback: permissionsCallback | rig
  * @name permissionsUnsubscribe
  * @access public
  * @param callback The callback to unsubscribe
- * @param permission Optional, the specific permission to unsubscribe from
+ * @param name Optional, the specific permission to unsubscribe from
+ * @param id Optional, the specific ID on the permission to unsubscribe from
  * @returns true if the callback was found and removed
  */
-export declare function permissionsUnsubscribe(callback: permissionsCallback | rightsCallback, permission?: string): boolean;
+export declare function permissionsUnsubscribe(callback: permissionsCallback | rightsCallback, name?: string, id?: string): boolean;
 /**
  * Sign In
  *
@@ -115,7 +119,7 @@ export declare function unsubscribe(callback: userCallback): boolean;
 /**
  * Update
  *
- * Sets the passed data, or gets the latest from the server
+ * Gets the latest data from the server
  *
  * @name update
  * @access public
@@ -135,14 +139,26 @@ export declare function usePermissions(): Record<string, rightsStruct>;
 /**
  * Use Rights
  *
- * A react hook to keep track of what rights a user has
+ * A react hook to keep track of what rights a user has under a specific ID
  *
  * @name useRights
  * @access public
  * @param permission The name of the permission to track
+ * @param id? Tbe specific ID to return
  * @returns the rights associated with the permission
  */
-export declare function useRights(permission: string): rightsStruct;
+export declare function useRights(permission: string, id?: string): rightsStruct;
+/**
+ * Use Rights All
+ *
+ * A react hook to keep track of what rights a user has for all IDs under a name
+ *
+ * @name useRightsAll
+ * @access public
+ * @param permission The name of the permission to track
+ * @returns the rights associated with the permission for each ID available
+ */
+export declare function useRightsAll(permission: string): Record<string, rightsStruct>;
 /**
  * Use User
  *
