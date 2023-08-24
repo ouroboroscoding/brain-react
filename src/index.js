@@ -441,7 +441,7 @@ export function useRights(permission, id = '*') {
     useEffect(() => {
         const o = permissionsSubscribe(rightsSet, permission, id === '*' ? RIGHTS_ALL_ID : id);
         return () => o.unsubscribe();
-    }, []);
+    }, [permission, id]);
     // Return the current value
     return rights;
 }
@@ -462,7 +462,7 @@ export function useRightsAll(permission) {
     useEffect(() => {
         const o = permissionsSubscribe(rightsSet, permission);
         return () => o.unsubscribe();
-    }, []);
+    }, [permission]);
     // Return the current value
     return rights;
 }

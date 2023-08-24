@@ -1,6 +1,6 @@
 {
 	"name": "@ouroboros/brain-react",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Hooks for handling signed in users and their permissions",
 	"main": "src/index.js",
 	"types": "src/index.d.ts",
