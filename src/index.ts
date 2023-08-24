@@ -597,7 +597,7 @@ export function useRights(
 			id === '*' ? RIGHTS_ALL_ID : id
 		);
 		return () => o.unsubscribe();
-	}, []);
+	}, [permission, id]);
 
 	// Return the current value
 	return rights;
@@ -627,7 +627,7 @@ export function useRightsAll(
 			permission
 		);
 		return () => o.unsubscribe();
-	}, []);
+	}, [permission]);
 
 	// Return the current value
 	return rights;
