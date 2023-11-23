@@ -530,7 +530,7 @@ export function update(): Promise<userType> {
 				set(data);
 
 				// Update the permissions
-				permissionsSet(data.permissions);
+				permissionsSet(data.permissions || {});
 
 				// Resolve with the user data
 				resolve(data);

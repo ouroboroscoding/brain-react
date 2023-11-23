@@ -389,7 +389,7 @@ export function update() {
                 // Set the current user
                 set(data);
                 // Update the permissions
-                permissionsSet(data.permissions);
+                permissionsSet(data.permissions || {});
                 // Resolve with the user data
                 resolve(data);
             }
