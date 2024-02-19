@@ -42,6 +42,19 @@ export type signinReturn = {
 	session: string,
 	user: userType
 }
+export type signupStruct = {
+	email: string,
+	first_name?: string,
+	'g-recaptcha-response': string,
+	last_name?: string,
+	locale?: string,
+	phone_ext?: string,
+	phone_number?: string,
+	portal?: string,
+	suffix?: string,
+	title?: string,
+	url: string
+}
 export type subscribeReturn = {
 	data: userType,
 	unsubscribe: () => void
@@ -446,6 +459,25 @@ export function signout(): Promise<boolean> {
 			}
 			resolve(data);
 		}, reject);
+	});
+}
+
+/**
+ * Sign Up
+ *
+ * Called to sign up a new user account
+ *
+ * @name signup
+ * @access public
+ * @param using A session token, or the email/passwd to log in
+ */
+export function	signup(using: signupStruct): Promise<boolean> {
+
+	// Create a new Promise and return it
+	return new Promise((resolve, reject) => {
+
+		// Attempt to signin
+		brain.create('signup', using).then(resolve, reject);
 	});
 }
 
