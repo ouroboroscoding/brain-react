@@ -30,6 +30,19 @@ export type signinReturn = {
     session: string;
     user: userType;
 };
+export type signupStruct = {
+    email: string;
+    first_name?: string;
+    'g-recaptcha-response': string;
+    last_name?: string;
+    locale?: string;
+    phone_ext?: string;
+    phone_number?: string;
+    portal?: string;
+    suffix?: string;
+    title?: string;
+    url: string;
+};
 export type subscribeReturn = {
     data: userType;
     unsubscribe: () => void;
@@ -94,6 +107,16 @@ export declare function signin(using: string | signinStruct): Promise<signinRetu
  * @access public
  */
 export declare function signout(): Promise<boolean>;
+/**
+ * Sign Up
+ *
+ * Called to sign up a new user account
+ *
+ * @name signup
+ * @access public
+ * @param using A session token, or the email/passwd to log in
+ */
+export declare function signup(using: signupStruct): Promise<boolean>;
 /**
  * Subscribe
  *
