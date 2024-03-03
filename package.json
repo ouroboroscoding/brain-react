@@ -35,7 +35,7 @@
 		"@ouroboros/clone": "^1.0.1"
 	},
 	"peerDependencies": {
-		"@ouroboros/body": "^1.0.3",
+		"@ouroboros/body": "^1.0.4",
 		"react": "^17.0.2"
 	}
 }
