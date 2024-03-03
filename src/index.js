@@ -324,6 +324,22 @@ export function signout() {
     });
 }
 /**
+ * Sign Up
+ *
+ * Called to sign up a new user account
+ *
+ * @name signup
+ * @access public
+ * @param using A session token, or the email/passwd to log in
+ */
+export function signup(using) {
+    // Create a new Promise and return it
+    return new Promise((resolve, reject) => {
+        // Attempt to signin
+        brain.create('signup', using).then(resolve, reject);
+    });
+}
+/**
  * Subscribe
  *
  * Subscribes a callback to signed in user updates
