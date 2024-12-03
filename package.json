@@ -1,6 +1,6 @@
 {
 	"name": "@ouroboros/brain-react",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Hooks for handling signed in users and their permissions",
 	"main": "src/index.js",
 	"types": "src/index.d.ts",
@@ -36,6 +36,6 @@
 	},
 	"peerDependencies": {
 		"@ouroboros/body": "^1.0.4",
-		"react": "^17.0.2"
+		"react": "^17.0.0 || ^18.0.0"
 	}
 }
