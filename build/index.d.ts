@@ -146,7 +146,7 @@ export declare function unsubscribe(callback: userCallback): boolean;
  *
  * @name update
  * @access public
- * @param user Optional, the user data to set from
+ * @returns Promise
  */
 export declare function update(): Promise<userType>;
 /**

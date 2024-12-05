@@ -393,7 +393,7 @@ export function unsubscribe(callback) {
  *
  * @name update
  * @access public
- * @param user Optional, the user data to set from
+ * @returns Promise
  */
 export function update() {
     // Create a new Promise and return it
