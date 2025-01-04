@@ -7,20 +7,22 @@
  * @copyright Ouroboros Coding Inc.
  * @created 2023-03-06
  */
+export type idStruct = {
+    create?: true;
+    delete?: true;
+    read?: true;
+    update?: true;
+};
 export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
 export type permissionSubscribeReturn = {
     data: Record<string, Record<string, rightsStruct>> | Record<string, rightsStruct> | rightsStruct;
     unsubscribe: () => void;
 };
+export type permissionsStruct = Record<string, rightsStruct>;
 export type rightOption = 'create' | 'delete' | 'read' | 'update';
 export type rightStruct = Record<string, number>;
 export type rightsCallback = (rights: rightsStruct) => void;
-export type rightsStruct = Record<string, {
-    create?: true;
-    delete?: true;
-    read?: true;
-    update?: true;
-}>;
+export type rightsStruct = Record<string, idStruct>;
 export type signinStruct = {
     email: string;
     passwd: string;
@@ -158,7 +160,7 @@ export declare function update(): Promise<userType>;
  * @access public
  * @returns the rights associated with all permissions
  */
-export declare function usePermissions(): Record<string, rightsStruct>;
+export declare function usePermissions(): permissionsStruct;
 /**
  * Use Rights
  *
@@ -170,7 +172,7 @@ export declare function usePermissions(): Record<string, rightsStruct>;
  * @param id? Tbe specific ID to return
  * @returns the rights associated with the permission
  */
-export declare function useRights(permission: string, id?: string): rightsStruct;
+export declare function useRights(permission: string, id?: string): idStruct;
 /**
  * Use Rights All
  *
@@ -181,7 +183,7 @@ export declare function useRights(permission: string, id?: string): rightsStruct
  * @param permission The name of the permission to track
  * @returns the rights associated with the permission for each ID available
  */
-export declare function useRightsAll(permission: string): Record<string, rightsStruct>;
+export declare function useRightsAll(permission: string): rightsStruct;
 /**
  * Use User
  *

@@ -430,7 +430,7 @@ export function update() {
  */
 export function usePermissions() {
     // Store the state
-    const [perms, permsSet] = useState({});
+    const [perms, permsSet] = useState(_permissions);
     // Load effect, subscribe to permissions changes
     useEffect(() => {
         const o = permissionsSubscribe(permsSet);
@@ -452,7 +452,9 @@ export function usePermissions() {
  */
 export function useRights(permission, id = '*') {
     // Store the state
-    const [rights, rightsSet] = useState({});
+    const [rights, rightsSet] = useState(_permissions[permission] ?
+        (_permissions[permission][id] || {}) :
+        {});
     // Load effect, subscribe to specific permission changes
     useEffect(() => {
         const o = permissionsSubscribe(rightsSet, permission, id === '*' ? RIGHTS_ALL_ID : id);
@@ -473,7 +475,7 @@ export function useRights(permission, id = '*') {
  */
 export function useRightsAll(permission) {
     // Store the results
-    const [rights, rightsSet] = useState({});
+    const [rights, rightsSet] = useState(_permissions[permission] || {});
     // Load effect, subscribe to specific permission changes
     useEffect(() => {
         const o = permissionsSubscribe(rightsSet, permission);
@@ -493,7 +495,7 @@ export function useRightsAll(permission) {
  */
 export function useUser() {
     // State
-    const [user, userSet] = useState(false);
+    const [user, userSet] = useState(_user);
     // Load effect, subscribe to user changes
     useEffect(() => {
         const o = subscribe(userSet);

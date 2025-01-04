@@ -17,6 +17,12 @@ import clone from '@ouroboros/clone';
 import { useEffect, useState } from 'react';
 
 // Types
+export type idStruct = {
+	create?: true,
+	delete?: true,
+	read?: true,
+	update?: true
+};
 export type permissionsCallback = (permissions: Record<string, rightsStruct>) => void;
 export type permissionSubscribeReturn = {
 	data: Record<string, Record<string, rightsStruct>> |
@@ -24,15 +30,11 @@ export type permissionSubscribeReturn = {
 			rightsStruct;
 	unsubscribe: () => void
 }
+export type permissionsStruct = Record<string, rightsStruct>;
 export type rightOption = 'create' | 'delete' | 'read' | 'update';
 export type rightStruct = Record<string, number>
 export type rightsCallback = (rights: rightsStruct) => void;
-export type rightsStruct = Record<string, {
-	create?: true,
-	delete?: true,
-	read?: true,
-	update?: true
-}>
+export type rightsStruct = Record<string, idStruct>
 export type signinStruct = {
 	email: string,
 	passwd: string,
@@ -79,7 +81,7 @@ const _types: Record<rightOption, number> = {
 let _user: userType | false = false;
 const _userSubscriptions: ((user: userType) => void)[] = [];
 // Permissions
-let _permissions: Record<string, rightsStruct> = {};
+let _permissions: permissionsStruct = {};
 const _permissionsSubscriptions: permissionsCallback[] = [];
 // Rights
 const _rightsSubscriptions: Record<string, rightsCallback[]> = {};
@@ -587,16 +589,18 @@ export function update(): Promise<userType> {
  * @access public
  * @returns the rights associated with all permissions
  */
-export function usePermissions(): Record<string, rightsStruct> {
+export function usePermissions(): permissionsStruct {
 
 	// Store the state
-	const [perms, permsSet] = useState<Record<string, rightsStruct>>({});
+	const [ perms, permsSet ] =useState<permissionsStruct>(
+		_permissions
+	);
 
 	// Load effect, subscribe to permissions changes
 	useEffect(() => {
 		const o = permissionsSubscribe(permsSet);
 		return () => o.unsubscribe();
-	}, []);
+	}, [ ]);
 
 	// Return the current value
 	return perms;
@@ -616,10 +620,14 @@ export function usePermissions(): Record<string, rightsStruct> {
 export function useRights(
 	permission: string,
 	id: string = '*'
-): rightsStruct {
+): idStruct {
 
 	// Store the state
-	const [rights, rightsSet] = useState<rightsStruct>({ });
+	const [ rights, rightsSet ] = useState<idStruct>(
+		_permissions[permission] ?
+			(_permissions[permission][id] || {}) :
+			{}
+	);
 
 	// Load effect, subscribe to specific permission changes
 	useEffect(() => {
@@ -629,7 +637,7 @@ export function useRights(
 			id === '*' ? RIGHTS_ALL_ID : id
 		);
 		return () => o.unsubscribe();
-	}, [permission, id]);
+	}, [ permission, id ]);
 
 	// Return the current value
 	return rights;
@@ -647,10 +655,12 @@ export function useRights(
  */
 export function useRightsAll(
 	permission: string
-): Record<string, rightsStruct> {
+): rightsStruct {
 
 	// Store the results
-	const [rights, rightsSet] = useState<Record<string, rightsStruct>>({ });
+	const [ rights, rightsSet ] = useState<rightsStruct>(
+		_permissions[permission] || {}
+	);
 
 	// Load effect, subscribe to specific permission changes
 	useEffect(() => {
@@ -659,7 +669,7 @@ export function useRightsAll(
 			permission
 		);
 		return () => o.unsubscribe();
-	}, [permission]);
+	}, [ permission ]);
 
 	// Return the current value
 	return rights;
@@ -677,13 +687,13 @@ export function useRightsAll(
 export function useUser() {
 
 	// State
-	const [user, userSet] = useState<userType | false>(false);
+	const [ user, userSet ] = useState<userType | false>(_user);
 
 	// Load effect, subscribe to user changes
 	useEffect(() => {
 		const o = subscribe(userSet);
 		return () => o.unsubscribe();
-	}, []);
+	}, [ ]);
 
 	// Return current user
 	return user;
