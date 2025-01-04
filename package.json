@@ -32,10 +32,10 @@
 	},
 	"dependencies": {
 		"@ouroboros/brain": "^1.3.0",
-		"@ouroboros/clone": "^1.0.1"
+		"@ouroboros/clone": "^1.1.0"
 	},
 	"peerDependencies": {
-		"@ouroboros/body": "^1.1.0",
+		"@ouroboros/body": "^1.1.2",
 		"react": "^17.0.0 || ^18.0.0"
 	}
 }
