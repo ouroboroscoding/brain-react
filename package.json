@@ -1,12 +1,12 @@
 {
 	"name": "@ouroboros/brain-react",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Hooks for handling signed in users and their permissions",
-	"main": "build/index.js",
-	"types": "build/index.d.ts",
+	"main": "index.js",
+	"types": "index.d.ts",
 	"scripts": {
 		"build": "tslint -p tsconfig.json && tsc",
-		"clean": "rm build/*",
+		"clean": "rm index.js index.d.ts",
 		"for_local": "npm install; tslint -p tsconfig.json && tsc; rm -Rf node_modules",
 		"test": "echo \"Error: no test specified.\" && exit 1"
 	},
