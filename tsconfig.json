@@ -11,12 +11,12 @@
 		"types": ["react", "node"],
 		"moduleResolution": "node",
 		"noEmit": false,
-		"outDir": "build",
+		"outDir": ".",
 		"resolveJsonModule": true,
 		"strict": true,
 		"strictPropertyInitialization": false,
 		"target": "esnext"
 	},
-	"include": ["./"],
+	"include": ["./src"],
 	"exclude": []
 }
