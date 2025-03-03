@@ -351,7 +351,7 @@ function permissionsSet(list: Record<string, rightStruct>): void {
 		for(const f of _rightsSubscriptions[k]) {
 
 			// Split the key into name and ID
-			const [name, id] = k.split(':')
+			const [ name, id ] = k.split(':')
 
 			// Pass a copy of the rights to it if we find any, else just an
 			//	empty object
