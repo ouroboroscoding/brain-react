@@ -1,5 +1,5 @@
 /**
- * Myself
+ * Brain React
  *
  * Handles managing the currently signed in user and their permissions
  *
