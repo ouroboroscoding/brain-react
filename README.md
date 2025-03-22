@@ -11,13 +11,13 @@ foo@bar:~$ npm install @ouroboros/brain-react
 ```
 
 ## Using brain-react
-If you're using react, this library helps you keep track of who's logged in and
+If you're using react this library helps you keep track of who's logged in and
 what their permissions are. It also provides several hooks for keeping up to
 date on this info.
 
 If you're using brain-react it's recommended you do not use
 [@ouroboros/brain](https://www.npmjs.com/package/@ouroboros/brain) directly for
-signin / signout, doing so will break brain-react's ability to keep track and
+signin / signout, doing so will break `brain-react`'s ability to keep track and
 notify downstream components.
 
 ### Functions
@@ -45,6 +45,8 @@ onNoSession(() => {
   localStorage.removeItem('session');
 });
 ```
+
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
 
 ### permissionsSubscribe
 `permissionsSubscribe` is useful if you're working in a react app but not
@@ -105,6 +107,8 @@ permissonsSubscribe(f, 'name', '012345679abc4defa0123456789abcde');
 permissionsUnsubscribe(f, 'name', '012345679abc4defa0123456789abcde');
 ```
 
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
+
 ### signin
 `signin` has two variants. One where we log into the system using a session key,
 and the other where we use the traditional email and password.
@@ -127,6 +131,8 @@ if(session) {
 }
 ```
 
+[ [functions](#functions), [signin](#signin) ]
+
 #### sign in with email and password
 ```javascript
 import { signin } from '@ouroboros/brain-react';
@@ -140,6 +146,8 @@ signin({
   addMessage(`Thanks for signing in ${res.user.first_name}`);
 });
 ```
+
+[ [functions](#functions), [signin](#signin) ]
 
 ### signout
 `signout` clears the user and session and triggers the same hooks from `signin`.
@@ -158,6 +166,8 @@ signout(res => {
   addMessage('Goodbye!');
 });
 ```
+
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
 
 ### signup
 `signup` makes the request to create a new user.
@@ -183,6 +193,8 @@ signup(user).then(() => {
 	}
 });
 ```
+
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
 
 ### subscribe
 `subscribe` is useful if you're working in a react app but not actually inside a
@@ -216,6 +228,8 @@ subscribe(f);
 unsubscribe(f);
 ```
 
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
+
 ### update
 `update` makes a request to the server for the latest info about the user. It
 triggers all the hooks.
@@ -224,15 +238,17 @@ triggers all the hooks.
 import { update } from '@ouroboros/brain-react';
 import { addMessage } from 'some_provided_module';
 update().then(user => {
-	addMessage(`Hi ${user.first_name}!`);
+  addMessage(`Hi ${user.first_name}!`);
 });
 ```
+
+[ [top](#ouroborosbrain-react), [functions](#functions) ]
 
 ### usePermissions
 `usePermissions` is useful if you need to keep up to date on what permissions
 the currently signed in user has.
 
-```javascript
+```jsx
 import { RIGHTS_ALL_ID } from '@ouroboros/brain';
 import { usePermissions } from '@ouroboros/brain-react';
 import React, { useState } from 'react'
@@ -259,11 +275,13 @@ function MyComponent({ id }) {
 }
 ```
 
+[ [top](#ouroborosbrain-react), [hooks](#hooks) ]
+
 ### useRights
 `useRights` is the subset of `usePermissions`, it's helpful if you're really
 only interested in one kind of permission.
 
-```javascript
+```jsx
 import { useRights } from '@ouroboros/brain-react';
 import React, { useState } from 'react'
 function MyComponent({ id }) {
@@ -290,7 +308,7 @@ Only passing the `name` 'my_service_permission' results in `useRights` assuming
 [RIGHTS_ALL_ID](https://github.com/ouroboroscoding/brain-js/blob/main/README.md#rights_all_id).
 If you're interested in a specific ID instead, pass it as the second argument.
 
-```javascript
+```jsx
 import { useRights } from '@ouroboros/brain-react';
 import React from 'react'
 function MyComponent({ id }) {
@@ -316,11 +334,13 @@ function MyComponent({ id }) {
 }
 ```
 
+[ [top](#ouroborosbrain-react), [hooks](#hooks) ]
+
 ### useRightsAll
 `useRightsAll` is like `useRights` except it's not global or specific id, but
 based on any changes in any ID under the specific name.
 
-```javascript
+```jsx
 import { useRightsAll } from '@ouroboros/brain-react';
 import React, { useState } from 'react'
 function MyComponent({ id }) {
@@ -336,11 +356,13 @@ function MyComponent({ id }) {
 }
 ```
 
+[ [top](#ouroborosbrain-react), [hooks](#hooks) ]
+
 ### useUser
 `useUser` is useful if you need to keep up to date on the details of the
 currently signed in user.
 
-```javascript
+```jsx
 import { useUser } from '@ouroboros/brain-react';
 import React from 'react'
 function MyComponent({ }) {
@@ -350,3 +372,5 @@ function MyComponent({ }) {
 ```
 
 `useUser` returns `false` if no user is currently signed in.
+
+[ [top](#ouroborosbrain-react), [hooks](#hooks) ]
