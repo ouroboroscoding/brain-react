@@ -5,6 +5,9 @@ Hooks for handling signed in users and their permissions using the
 [brain2_oc](https://pypi.org/project/brain2_oc/) service created by Ouroboros
 Coding Inc.
 
+See [Releases](https://github.com/ouroboroscoding/brain-react/blob/main/releases.md)
+for changes from release to release.
+
 ## Installation
 ```console
 foo@bar:~$ npm install @ouroboros/brain-react
