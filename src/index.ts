@@ -571,11 +571,7 @@ export function update(): Promise<userType> {
 			}
 
 		}, (error: responseErrorStruct) => {
-			if(error.handle) {
-				error.handle(JSON.stringify({ code: error.code, msg: error.msg }));
-			} else {
-				reject(error);
-			}
+			reject(error);
 		});
 	});
 }
