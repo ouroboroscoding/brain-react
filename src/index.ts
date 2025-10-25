@@ -409,7 +409,7 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 					session: using,
 					user
 				})
-			});
+			}, reject);
 		}
 
 		// Else, if we got an email and password
