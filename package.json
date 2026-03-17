@@ -24,18 +24,18 @@
 		"url": "https://github.com/ouroboroscoding/brain-react/issues"
 	},
 	"devDependencies": {
-		"@types/node": "^18.14.0",
-		"@types/react": "^18.0.28",
+		"@types/node": "^25.5.0",
+		"@types/react": "^19.2.14",
 		"tslint": "^6.1.3",
 		"tslint-config-prettier": "^1.18.0",
 		"typescript": "^5.9.2"
 	},
 	"dependencies": {
-		"@ouroboros/brain": "^2.3.1",
+		"@ouroboros/brain": "^2.4.0",
 		"@ouroboros/clone": "^1.1.0"
 	},
 	"peerDependencies": {
-		"@ouroboros/body": "^1.2.2",
+		"@ouroboros/body": "^1.3.0",
 		"react": "^17.0.0 || ^18.0.0"
 	}
 }

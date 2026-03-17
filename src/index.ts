@@ -9,7 +9,7 @@
  */
 
 // Ouroboros modules
-import body, { responseErrorStruct } from '@ouroboros/body';
+import body, { responseStruct, responseErrorStruct } from '@ouroboros/body';
 import brain, { RIGHTS_ALL_ID } from '@ouroboros/brain';
 import clone from '@ouroboros/clone';
 
@@ -416,20 +416,20 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 		else {
 
 			// Attempt to signin
-			brain.create('signin', using).then((data: signinReturn) => {
+			brain.create('signin', using).then((res: responseStruct) => {
 
 				// If we were successful
-				if(data) {
+				if(res.data) {
 
 					// Set the session
-					brain.session(data.session);
+					brain.session(res.data.session);
 
 					// Fetch the current user
 					update().then(user => {
 
 						// Resolve with the session and user
 						resolve({
-							session: data.session,
+							session: res.data.session,
 							user
 						});
 					});
@@ -453,13 +453,13 @@ export function signout(): Promise<boolean> {
 	return new Promise((resolve, reject) => {
 
 		// Call the sign out request
-		brain.create('signout').then((data: boolean) => {
-			if(data) {
+		brain.create('signout').then((res: responseStruct) => {
+			if(res.data) {
 				brain.session(null as unknown as string);
 				set(false);
 				permissionsSet({});
 			}
-			resolve(data);
+			resolve(res.data);
 		}, reject);
 	});
 }
@@ -479,7 +479,7 @@ export function	signup(using: signupStruct): Promise<boolean> {
 	return new Promise((resolve, reject) => {
 
 		// Attempt to signin
-		brain.create('signup', using).then(resolve, reject);
+		brain.create('signup', using).then((res: responseStruct) => resolve(res.data), reject);
 	});
 }
 
@@ -555,19 +555,19 @@ export function update(): Promise<userType> {
 	return new Promise((resolve, reject) => {
 
 		// Fetch the user using the session
-		brain.read('user').then((data: userType) => {
+		brain.read('user').then((res: responseStruct) => {
 
 			// If we got the user
-			if(data) {
+			if(res.data) {
 
 				// Set the current user
-				set(data);
+				set(res.data);
 
 				// Update the permissions
-				permissionsSet(data.permissions || {});
+				permissionsSet(res.data.permissions || {});
 
 				// Resolve with the user data
-				resolve(data);
+				resolve(res.data);
 			}
 
 		}, (error: responseErrorStruct) => {
