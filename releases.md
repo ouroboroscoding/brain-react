@@ -1,7 +1,10 @@
 # @ouroboros/brain-react releases
 
-## 2.3.?
+## 2.3.3
 - Updated `@ouroboros/body` and `@ouroboros/brain` to latest
+
+## 2.3.2
+- Fixed a bug in signin that caused the Promise to never close if it fails
 
 ## 2.3.1
 - Updated `@ouroboros/body` and `@ouroboros/brain` to latest
