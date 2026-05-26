@@ -1,5 +1,8 @@
 # @ouroboros/brain-react releases
 
+## 2.3.4
+- Allowing install with React 19.*
+
 ## 2.3.3
 - Updated `@ouroboros/body` and `@ouroboros/brain` to latest
 
