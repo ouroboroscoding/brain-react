@@ -1,5 +1,6 @@
 # @ouroboros/brain-react
-[![npm version](https://img.shields.io/npm/v/@ouroboros/brain-react.svg)](https://www.npmjs.com/package/@ouroboros/brain-react) ![Custom License](https://img.shields.io/npm/l/@ouroboros/brain-react.svg)
+[![npm version](https://img.shields.io/npm/v/@ouroboros/brain-react.svg)](https://www.npmjs.com/package/@ouroboros/brain-react)
+![Custom License](https://img.shields.io/npm/l/@ouroboros/brain-react.svg)
 
 Hooks for handling signed in users and their permissions using the
 [brain2_oc](https://pypi.org/project/brain2_oc/) service created by Ouroboros
