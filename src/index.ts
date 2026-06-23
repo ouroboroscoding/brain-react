@@ -418,6 +418,12 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 			// Attempt to signin
 			brain.create('signin', using).then((res: responseStruct) => {
 
+				// If there is an error
+				if(res.error) {
+					reject(res.error);
+					return;
+				}
+
 				// If we were successful
 				if(res.data) {
 
@@ -432,9 +438,12 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 							session: res.data.session,
 							user
 						});
+					}, error => {
+						reject(error);
 					});
 				}
-			}, reject);
+
+			});
 		}
 	});
 }
@@ -454,12 +463,23 @@ export function signout(): Promise<boolean> {
 
 		// Call the sign out request
 		brain.create('signout').then((res: responseStruct) => {
+
+			// If there's an error
+			if(res.error) {
+				reject(res.error);
+				return;
+			}
+
+			// If there was true data
 			if(res.data) {
 				brain.session(null as unknown as string);
 				set(false);
 				permissionsSet({});
 			}
-			resolve(res.data);
+
+			// Resolve regardless
+			resolve(res.data ?? {});
+
 		}, reject);
 	});
 }
@@ -478,8 +498,18 @@ export function	signup(using: signupStruct): Promise<boolean> {
 	// Create a new Promise and return it
 	return new Promise((resolve, reject) => {
 
-		// Attempt to signin
-		brain.create('signup', using).then((res: responseStruct) => resolve(res.data), reject);
+		// Attempt to signup
+		brain.create('signup', using).then((res: responseStruct) => {
+
+			// If we got an error
+			if(res.error) {
+				reject(res.error);
+				return;
+			}
+
+			// Resolve
+			resolve(res.data ?? {});
+		});
 	});
 }
 
@@ -557,6 +587,12 @@ export function update(): Promise<userType> {
 		// Fetch the user using the session
 		brain.read('user').then((res: responseStruct) => {
 
+			// If we got an error
+			if(res.error) {
+				reject(res.error);
+				return;
+			}
+
 			// If we got the user
 			if(res.data) {
 
@@ -565,13 +601,11 @@ export function update(): Promise<userType> {
 
 				// Update the permissions
 				permissionsSet(res.data.permissions || {});
-
-				// Resolve with the user data
-				resolve(res.data);
 			}
 
-		}, (error: responseErrorStruct) => {
-			reject(error);
+			// Resolve regardless
+			resolve(res.data ?? {});
+
 		});
 	});
 }
@@ -588,7 +622,7 @@ export function update(): Promise<userType> {
 export function usePermissions(): permissionsStruct {
 
 	// Store the state
-	const [ perms, permsSet ] =useState<permissionsStruct>(
+	const [ perms, permsSet ] = useState<permissionsStruct>(
 		_permissions
 	);
 
