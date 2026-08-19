@@ -1,7 +1,11 @@
 # @ouroboros/brain-react releases
 
+## 2.3.6
+- Bumped @ouroboros/brain to 2.4.1 to get the new `referral` field in `user`
+
 ## 2.3.5
-- Fixed bugs related to updates in @ouroboros/body that were never properly implemented
+- Fixed bugs related to updates in @ouroboros/body that were never properly
+implemented
 
 ## 2.3.4
 - Allowing install with React 19.*
