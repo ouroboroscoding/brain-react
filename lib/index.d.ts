@@ -31,7 +31,7 @@ export type signinStruct = {
 export type signinReturn = {
     session: string;
     user: userType;
-};
+} | false;
 export type signupStruct = {
     email: string;
     first_name?: string;

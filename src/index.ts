@@ -43,7 +43,7 @@ export type signinStruct = {
 export type signinReturn = {
 	session: string,
 	user: userType
-}
+} | false;
 export type signupStruct = {
 	email: string,
 	first_name?: string,
@@ -421,11 +421,10 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 				// If there is an error
 				if(res.error) {
 					reject(res.error);
-					return;
 				}
 
 				// If we were successful
-				if(res.data) {
+				else if(res.data) {
 
 					// Set the session
 					brain.session(res.data.session);
@@ -438,12 +437,16 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 							session: res.data.session,
 							user
 						});
-					}, error => {
-						reject(error);
-					});
+
+					}, reject);
 				}
 
-			});
+				// Else, something went wrong
+				else {
+					reject({ code: 0, msg: 'signin returned no data' });
+				}
+
+			}, reject);
 		}
 	});
 }
@@ -509,7 +512,7 @@ export function	signup(using: signupStruct): Promise<boolean> {
 
 			// Resolve
 			resolve(res.data ?? {});
-		});
+		}, reject);
 	});
 }
 
@@ -606,7 +609,7 @@ export function update(): Promise<userType> {
 			// Resolve regardless
 			resolve(res.data ?? {});
 
-		});
+		}, reject);
 	});
 }
 
