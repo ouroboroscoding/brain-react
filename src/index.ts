@@ -9,7 +9,7 @@
  */
 
 // Ouroboros modules
-import body, { responseStruct, responseErrorStruct } from '@ouroboros/body';
+import body, { responseStruct, usesCookieSession } from '@ouroboros/body';
 import brain, { RIGHTS_ALL_ID } from '@ouroboros/brain';
 import clone from '@ouroboros/clone';
 
@@ -401,7 +401,9 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 		if(typeof using === 'string') {
 
 			// Set the session
-			brain.session(using);
+			if(!usesCookieSession()) {
+				brain.session(using);
+			}
 
 			// Fetch the user associated
 			update().then(user => {
@@ -427,7 +429,9 @@ export function	signin(using: string | signinStruct): Promise<signinReturn> {
 				else if(res.data) {
 
 					// Set the session
-					brain.session(res.data.session);
+					if(!usesCookieSession()) {
+						brain.session(res.data.session);
+					}
 
 					// Fetch the current user
 					update().then(user => {
